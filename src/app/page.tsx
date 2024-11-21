@@ -73,7 +73,7 @@ export default async function Home({
             </Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>10 mins win count</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>10 mins lose count</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>15 mins lose count</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>15 mins win count</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>15 mins lose count</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>30 mins win count</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>30 mins lose count</Table.ColumnHeaderCell>
