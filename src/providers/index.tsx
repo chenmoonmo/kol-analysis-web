@@ -1,12 +1,14 @@
-
 import ThemeProvider from "./theme";
 import QueryClientProvider from "./query-client";
+import { Suspense } from "react";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
-    <QueryClientProvider>
-      <ThemeProvider>{children}</ThemeProvider>
-    </QueryClientProvider>
+    <Suspense>
+      <QueryClientProvider>
+        <ThemeProvider>{children}</ThemeProvider>
+      </QueryClientProvider>
+    </Suspense>
   );
 };
 

@@ -1,82 +1,134 @@
-import { TabNav, Table } from "@radix-ui/themes";
+"use client";
+import { Checkbox, TabNav, Table, Text } from "@radix-ui/themes";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
-type SearchParams = Promise<{
-  level: string;
-  key: string;
-}>;
+type DataItem = {
+  screen_name: string;
+  tweet_count: number;
+  "10_win_count": number;
+  "10_lose_count": number;
+  "15_win_count": number;
+  "15_lose_count": number;
+  "30_win_count": number;
+  "30_lose_count": number;
+  "10_rate": number;
+  "15_rate": number;
+  "30_rate": number;
+  kol: {
+    name: string;
+    favourites_count: number;
+    followers_count: number;
+    friends_count: number;
+    verified: boolean;
+    rest_id: string;
+    avatar: string;
+    description: string;
+  };
+};
 
-export default async function Home({
-  searchParams,
+const fetchData = async ({
+  queryKey,
 }: {
-  searchParams: SearchParams;
-}) {
-  // http://64.130.51.53:5014/kol/win_rate?level=1day&key=30_rate&desc=true&limit=1000&optimal=true
+  queryKey: [
+    string,
+    { level: string; key: string; optimal: boolean; desc: boolean }
+  ];
+}): Promise<DataItem[]> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, { level, key, desc, optimal }] = queryKey;
+  const data = await fetch(
+    `https://dq.shuyuchain.com/kol/win_rate?level=${level}&key=${key}&desc=${desc}&limit=1000&optimal=${optimal}`
+  ).then((res) => res.json());
 
-  let { level, key } = await searchParams;
+  return data.data;
+};
 
-  level = level || "3day";
-  key = key || "tweet_count";
+export default function Home() {
+  const searchParams = useSearchParams();
 
-  console.log(level, key);
+  const [level, setLevel] = useState(searchParams.get("level") || "3day");
+  const [key, setKey] = useState(searchParams.get("key") || "tweet_count");
+  const [desc, setDesc] = useState<boolean>(
+    searchParams.get("desc") === "true" || true
+  );
+  const [optimal, setOptimal] = useState<boolean>(
+    searchParams.get("optimal") === "true" || true
+  );
 
-  const data = (
-    (await fetch(
-      `http://64.130.51.53:5014/kol/win_rate?level=${level}&key=${key}&desc=true&limit=1000&optimal=true`,
-      {
-        next: {
-          revalidate: 60 * 60,
-        },
-      }
-    ).then((res) => res.json())) as {
-      data: {
-        screen_name: string;
-        tweet_count: number;
-        "10_win_count": number;
-        "10_lose_count": number;
-        "15_win_count": number;
-        "15_lose_count": number;
-        "30_win_count": number;
-        "30_lose_count": number;
-        "10_rate": number;
-        "15_rate": number;
-        "30_rate": number;
-        kol: {
-          name: string;
-          favourites_count: number;
-          followers_count: number;
-          friends_count: number;
-          verified: boolean;
-          rest_id: string;
-          avatar: string;
-          description: string;
-        };
-      }[];
-    }
-  ).data;
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ["kol/win_rate", { level, key, optimal, desc }],
+    queryFn: fetchData,
+  });
+
+  const sortKeyChangeHandler = useCallback((key: string) => {
+    setKey(key);
+    setDesc(true);
+  }, []);
+
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["kol/win_rate", { level: "1day", key, optimal, desc }],
+      queryFn: fetchData,
+    });
+    queryClient.prefetchQuery({
+      queryKey: ["kol/win_rate", { level: "2day", key, optimal, desc }],
+      queryFn: fetchData,
+    });
+    queryClient.prefetchQuery({
+      queryKey: ["kol/win_rate", { level: "3day", key, optimal, desc }],
+      queryFn: fetchData,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("level", level);
+    url.searchParams.set("key", key);
+    url.searchParams.set("desc", desc.toString());
+    url.searchParams.set("optimal", optimal.toString());
+    window.history.pushState(null, "", url.toString());
+  }, [level, key, desc, optimal]);
 
   return (
     <div className="font-[family-name:var(--font-geist-sans)] px-10">
-      <TabNav.Root>
-        <TabNav.Link
-          href={`/?level=1day&key=30_rate`}
-          active={level === "1day"}
-        >
-          1 days
-        </TabNav.Link>
-        <TabNav.Link
-          href={`/?level=2day&key=30_rate`}
-          active={level === "2day"}
-        >
-          2 days
-        </TabNav.Link>
-        <TabNav.Link
-          href={`/?level=3day&key=30_rate`}
-          active={level === "3day"}
-        >
-          3 days
-        </TabNav.Link>
-      </TabNav.Root>
+      <div className="flex items-center">
+        <TabNav.Root>
+          <TabNav.Link
+            onClick={() => setLevel("1day")}
+            active={level === "1day"}
+            className="cursor-pointer"
+          >
+            1 days
+          </TabNav.Link>
+          <TabNav.Link
+            onClick={() => setLevel("2day")}
+            active={level === "2day"}
+            className="cursor-pointer"
+          >
+            2 days
+          </TabNav.Link>
+          <TabNav.Link
+            onClick={() => setLevel("3day")}
+            active={level === "3day"}
+            className="cursor-pointer"
+          >
+            3 days
+          </TabNav.Link>
+        </TabNav.Root>
+        <div className="flex items-center gap-2 pl-4">
+          <Text size="2">optimal sort</Text>
+          <Checkbox
+            checked={optimal}
+            onCheckedChange={() => setOptimal(!optimal)}
+          />
+        </div>
+      </div>
 
       <Table.Root>
         <Table.Header>
@@ -85,9 +137,9 @@ export default async function Home({
             <Table.ColumnHeaderCell>followers</Table.ColumnHeaderCell>
 
             <Table.ColumnHeaderCell>
-              <Link
-                href={`?level=${level}&key=tweet_count`}
-                className="flex items-center"
+              <div
+                onClick={() => sortKeyChangeHandler("tweet_count")}
+                className="flex items-center cursor-pointer"
               >
                 <span>Tweets count</span>
                 {key === "tweet_count" && (
@@ -106,7 +158,7 @@ export default async function Home({
                     ></path>
                   </svg>
                 )}
-              </Link>
+              </div>
             </Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>10 mins win count</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>10 mins lose count</Table.ColumnHeaderCell>
@@ -115,9 +167,9 @@ export default async function Home({
             <Table.ColumnHeaderCell>30 mins win count</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>30 mins lose count</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>
-              <Link
-                href={`?level=${level}&key=10_rate`}
-                className="flex items-center"
+              <div
+                onClick={() => sortKeyChangeHandler("10_rate")}
+                className="flex items-center cursor-pointer"
               >
                 <span>10 mins rate</span>
                 {key === "10_rate" && (
@@ -136,12 +188,12 @@ export default async function Home({
                     ></path>
                   </svg>
                 )}
-              </Link>
+              </div>
             </Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>
-              <Link
-                href={`?level=${level}&key=15_rate`}
-                className="flex items-center"
+              <div
+                onClick={() => sortKeyChangeHandler("15_rate")}
+                className="flex items-center cursor-pointer"
               >
                 <span>15 mins rate</span>
                 {key === "15_rate" && (
@@ -160,12 +212,12 @@ export default async function Home({
                     ></path>
                   </svg>
                 )}
-              </Link>
+              </div>
             </Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>
-              <Link
-                href={`?level=${level}&key=30_rate`}
-                className="flex items-center"
+              <div
+                onClick={() => setKey("30_rate")}
+                className="flex items-center cursor-pointer"
               >
                 <span>30 mins rate</span>
                 {key === "30_rate" && (
@@ -184,41 +236,49 @@ export default async function Home({
                     ></path>
                   </svg>
                 )}
-              </Link>
+              </div>
             </Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
 
         <Table.Body>
-          {data.map((item) => (
-            <Table.Row key={item.screen_name}>
-              <Table.Cell>
-                <Link
-                  href={`https://twitter.com/${item.screen_name}`}
-                  target="_blank"
-                >
-                  @{item.screen_name}
-                </Link>
+          {query.isLoading ? (
+            <Table.Row>
+              <Table.Cell colSpan={12} className="text-center py-10">
+                Loading...
               </Table.Cell>
-              <Table.Cell>{item.kol.followers_count}</Table.Cell>
-              <Table.Cell>{item.tweet_count}</Table.Cell>
-              <Table.Cell>{item["10_win_count"]}</Table.Cell>
-              <Table.Cell>{item["10_lose_count"]}</Table.Cell>
-              <Table.Cell>{item["15_win_count"]}</Table.Cell>
-              <Table.Cell>{item["15_lose_count"]}</Table.Cell>
-              <Table.Cell>{item["30_win_count"]}</Table.Cell>
-              <Table.Cell>{item["30_lose_count"]}</Table.Cell>
-              <Table.Cell>{`${(item["10_rate"] * 100).toFixed(
-                2
-              )}%`}</Table.Cell>
-              <Table.Cell>{`${(item["15_rate"] * 100).toFixed(
-                2
-              )}%`}</Table.Cell>
-              <Table.Cell>{`${(item["30_rate"] * 100).toFixed(
-                2
-              )}%`}</Table.Cell>
             </Table.Row>
-          ))}
+          ) : (
+            query.data?.map((item) => (
+              <Table.Row key={item.screen_name}>
+                <Table.Cell>
+                  <Link
+                    href={`https://twitter.com/${item.screen_name}`}
+                    target="_blank"
+                  >
+                    @{item.screen_name}
+                  </Link>
+                </Table.Cell>
+                <Table.Cell>{item.kol.followers_count}</Table.Cell>
+                <Table.Cell>{item.tweet_count}</Table.Cell>
+                <Table.Cell>{item["10_win_count"]}</Table.Cell>
+                <Table.Cell>{item["10_lose_count"]}</Table.Cell>
+                <Table.Cell>{item["15_win_count"]}</Table.Cell>
+                <Table.Cell>{item["15_lose_count"]}</Table.Cell>
+                <Table.Cell>{item["30_win_count"]}</Table.Cell>
+                <Table.Cell>{item["30_lose_count"]}</Table.Cell>
+                <Table.Cell>{`${(item["10_rate"] * 100).toFixed(
+                  2
+                )}%`}</Table.Cell>
+                <Table.Cell>{`${(item["15_rate"] * 100).toFixed(
+                  2
+                )}%`}</Table.Cell>
+                <Table.Cell>{`${(item["30_rate"] * 100).toFixed(
+                  2
+                )}%`}</Table.Cell>
+              </Table.Row>
+            ))
+          )}
         </Table.Body>
       </Table.Root>
     </div>
