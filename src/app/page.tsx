@@ -1,4 +1,4 @@
-import { Table } from "@radix-ui/themes";
+import { TabNav, Table } from "@radix-ui/themes";
 import Link from "next/link";
 
 type SearchParams = Promise<{
@@ -22,7 +22,12 @@ export default async function Home({
 
   const data = (
     (await fetch(
-      `http://64.130.51.53:5014/kol/win_rate?level=${level}&key=${key}&desc=true&limit=1000&optimal=true`
+      `http://64.130.51.53:5014/kol/win_rate?level=${level}&key=${key}&desc=true&limit=1000&optimal=true`,
+      {
+        next: {
+          revalidate: 60 * 60,
+        },
+      }
     ).then((res) => res.json())) as {
       data: {
         screen_name: string;
@@ -36,7 +41,7 @@ export default async function Home({
         "10_rate": number;
         "15_rate": number;
         "30_rate": number;
-        "kol": {
+        kol: {
           name: string;
           favourites_count: number;
           followers_count: number;
@@ -45,14 +50,34 @@ export default async function Home({
           rest_id: string;
           avatar: string;
           description: string;
-        }
+        };
       }[];
     }
   ).data;
 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)]">
-      {/* <DataTable columns={columns} data={[data.data]}></DataTable> */}
+    <div className="font-[family-name:var(--font-geist-sans)] px-10">
+      <TabNav.Root>
+        <TabNav.Link
+          href={`/?level=1day&key=30_rate`}
+          active={level === "1day"}
+        >
+          1 days
+        </TabNav.Link>
+        <TabNav.Link
+          href={`/?level=2day&key=30_rate`}
+          active={level === "2day"}
+        >
+          2 days
+        </TabNav.Link>
+        <TabNav.Link
+          href={`/?level=3day&key=30_rate`}
+          active={level === "3day"}
+        >
+          3 days
+        </TabNav.Link>
+      </TabNav.Root>
+
       <Table.Root>
         <Table.Header>
           <Table.Row>
