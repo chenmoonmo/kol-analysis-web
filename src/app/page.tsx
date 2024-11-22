@@ -86,14 +86,14 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("level", level);
-    url.searchParams.set("key", key);
-    url.searchParams.set("desc", desc.toString());
-    url.searchParams.set("optimal", optimal.toString());
-    window.history.pushState(null, "", url.toString());
-  }, [level, key, desc, optimal]);
+  // useEffect(() => {
+  //   const url = new URL(window.location.href);
+  //   url.searchParams.set("level", level);
+  //   url.searchParams.set("key", key);
+  //   url.searchParams.set("desc", desc.toString());
+  //   url.searchParams.set("optimal", optimal.toString());
+  //   window.history.pushState(null, "", url.toString());
+  // }, [level, key, desc, optimal]);
 
   return (
     <div className="font-[family-name:var(--font-geist-sans)] px-10">
