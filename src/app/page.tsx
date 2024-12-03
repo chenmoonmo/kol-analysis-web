@@ -259,7 +259,7 @@ export default function Home() {
                     @{item.screen_name}
                   </Link>
                 </Table.Cell>
-                <Table.Cell>{item.kol.followers_count}</Table.Cell>
+                <Table.Cell>{item?.kol?.followers_count}</Table.Cell>
                 <Table.Cell>{item.tweet_count}</Table.Cell>
                 <Table.Cell>{item["10_win_count"]}</Table.Cell>
                 <Table.Cell>{item["10_lose_count"]}</Table.Cell>
