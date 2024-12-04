@@ -68,9 +68,26 @@ export default function Home() {
   const sortKeyChangeHandler = useCallback((key: string) => {
     setKey(key);
     setDesc(true);
+    const url = new URL(window.location.href);
+    url.searchParams.set("key", key);
+    url.searchParams.set("desc", desc.toString());
+    window.history.pushState(null, "", url.toString());
+  }, []);
+
+  const levelChangeHandler = useCallback((level: string) => {
+    setLevel(level);
+    setDesc(true);
+    const url = new URL(window.location.href);
+    url.searchParams.set("level", level);
+    url.searchParams.set("desc", desc.toString());
+    window.history.pushState(null, "", url.toString());
   }, []);
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("level", level);
+    url.searchParams.set("desc", desc.toString());
+    window.history.pushState(null, "", url.toString());
     queryClient.prefetchQuery({
       queryKey: ["kol/win_rate", { level: "1day", key, optimal, desc }],
       queryFn: fetchData,
@@ -86,37 +103,28 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // useEffect(() => {
-  //   const url = new URL(window.location.href);
-  //   url.searchParams.set("level", level);
-  //   url.searchParams.set("key", key);
-  //   url.searchParams.set("desc", desc.toString());
-  //   url.searchParams.set("optimal", optimal.toString());
-  //   window.history.pushState(null, "", url.toString());
-  // }, [level, key, desc, optimal]);
-
   return (
     <div className="font-[family-name:var(--font-geist-sans)] px-10">
       <div className="flex items-center">
         <TabNav.Root>
           <TabNav.Link
-            onClick={() => setLevel("1day")}
+            onClick={() => levelChangeHandler("1day")}
             active={level === "1day"}
-            className="cursor-pointer"
+            className="!cursor-pointer"
           >
             1 days
           </TabNav.Link>
           <TabNav.Link
-            onClick={() => setLevel("2day")}
+            onClick={() => levelChangeHandler("2day")}
             active={level === "2day"}
-            className="cursor-pointer"
+            className="!cursor-pointer"
           >
             2 days
           </TabNav.Link>
           <TabNav.Link
-            onClick={() => setLevel("3day")}
+            onClick={() => levelChangeHandler("3day")}
             active={level === "3day"}
-            className="cursor-pointer"
+            className="!cursor-pointer"
           >
             3 days
           </TabNav.Link>
