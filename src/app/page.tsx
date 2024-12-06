@@ -72,6 +72,7 @@ export default function Home() {
     url.searchParams.set("key", key);
     url.searchParams.set("desc", desc.toString());
     window.history.pushState(null, "", url.toString());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const levelChangeHandler = useCallback((level: string) => {
@@ -81,6 +82,7 @@ export default function Home() {
     url.searchParams.set("level", level);
     url.searchParams.set("desc", desc.toString());
     window.history.pushState(null, "", url.toString());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -104,7 +106,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)] px-10">
+    <div className="font-[family-name:var(--font-geist-sans)]">
       <div className="flex items-center">
         <TabNav.Root>
           <TabNav.Link

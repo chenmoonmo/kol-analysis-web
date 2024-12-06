@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
 import "@radix-ui/themes/styles.css";
+import "./globals.css";
 import Providers from "@/providers";
+import Nav from "@/components/nav";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,13 +25,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
       >
         <Providers>
-          {children}
+          <main className="grid grid-cols-[180px_1fr]">
+            <Nav />
+            {children}
+          </main>
         </Providers>
       </body>
     </html>
