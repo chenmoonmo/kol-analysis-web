@@ -40,7 +40,7 @@ const fetchData = async ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, { level, key, desc, optimal }] = queryKey;
   const data = await fetch(
-    `https://dq.shuyuchain.com/kol/win_rate?level=${level}&key=${key}&desc=${desc}&limit=1000&optimal=${optimal}`
+    `https://api.xdog.pro/kol/win_rate?level=${level}&key=${key}&desc=${desc}&limit=1000&optimal=${optimal}`
   ).then((res) => res.json());
 
   return data.data;

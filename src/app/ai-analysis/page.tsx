@@ -12,7 +12,7 @@ type AnalysisItem = {
 
 const fetchData = async (): Promise<AnalysisItem[]> => {
   const data = await fetch(
-    "https://dq.shuyuchain.com/kol/ai_analysis?page_size=1000"
+    "https://api.xdog.pro/kol/ai_analysis?page_size=1000"
   ).then((res) => res.json());
   return data.data;
 };
