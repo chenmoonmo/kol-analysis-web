@@ -71,6 +71,7 @@ export default function Home() {
     const url = new URL(window.location.href);
     url.searchParams.set("key", key);
     url.searchParams.set("desc", desc.toString());
+    url.searchParams.set("optimal", optimal.toString());
     window.history.pushState(null, "", url.toString());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -81,6 +82,15 @@ export default function Home() {
     const url = new URL(window.location.href);
     url.searchParams.set("level", level);
     url.searchParams.set("desc", desc.toString());
+    url.searchParams.set("optimal", optimal.toString());
+    window.history.pushState(null, "", url.toString());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const optimalSortChangeHandler = useCallback((value: boolean) => {
+    setOptimal(value);
+    const url = new URL(window.location.href);
+    url.searchParams.set("optimal", value.toString());
     window.history.pushState(null, "", url.toString());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -131,13 +141,13 @@ export default function Home() {
             3 days
           </TabNav.Link>
         </TabNav.Root>
-        <div className="flex items-center gap-2 pl-4">
+        <label className="flex items-center gap-2 pl-4 cursor-pointer">
           <Text size="2">optimal sort</Text>
           <Checkbox
             checked={optimal}
-            onCheckedChange={() => setOptimal(!optimal)}
+            onCheckedChange={optimalSortChangeHandler}
           />
-        </div>
+        </label>
       </div>
 
       <Table.Root>

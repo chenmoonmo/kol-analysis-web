@@ -2,6 +2,11 @@
 
 import { Table } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
+import markdownit from "markdown-it";
+
+const md = markdownit({
+  typographer: true
+});
 
 type AnalysisItem = {
   symbol: string;
@@ -18,7 +23,6 @@ const fetchData = async (): Promise<AnalysisItem[]> => {
 };
 
 export default function AiAnalysis() {
-    
   const { data } = useQuery({
     queryKey: ["ai-analysis"],
     queryFn: fetchData,
@@ -40,12 +44,17 @@ export default function AiAnalysis() {
               <Table.Cell>{item.symbol}</Table.Cell>
               <Table.Cell>{item.mint}</Table.Cell>
               <Table.Cell>
-                <div>
-                  {item.analysis.split("\n").map((line, index) => (
+                <div
+                  className="markdown-container leading-6"
+                  dangerouslySetInnerHTML={{
+                    __html: md.render(item.analysis),
+                  }}
+                >
+                  {/* {item.analysis.split("\n").map((line, index) => (
                     <p key={index} className="mb-2">
                       {line}
                     </p>
-                  ))}
+                  ))} */}
                 </div>
               </Table.Cell>
             </Table.Row>
