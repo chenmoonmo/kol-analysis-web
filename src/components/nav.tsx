@@ -28,6 +28,27 @@ export default function Nav() {
       >
         AI Analysis
       </RadixLink>
+      <RadixLink
+        className={`!block py-2 px-4 hover:bg-gray-800 rounded-md cursor-pointer ${
+          pathname === "/kol-tweets" ? "bg-gray-800" : ""
+        }`}
+        weight="medium"
+        color="gray"
+        href="/kol-tweets"
+      >
+        KOL Tweets
+      </RadixLink>
+
+      <RadixLink
+        className={`!block py-2 px-4 hover:bg-gray-800 rounded-md cursor-pointer ${
+          pathname === "/kol-list" ? "bg-gray-800" : ""
+        }`}
+        weight="medium"
+        color="gray"
+        href="/kol-list"
+      >
+        KOL List
+      </RadixLink>
     </div>
   );
 }
