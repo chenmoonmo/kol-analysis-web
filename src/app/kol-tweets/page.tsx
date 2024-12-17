@@ -47,8 +47,8 @@ function KolList() {
               <Select.Label>dist</Select.Label>
               <Select.Item value="1h">1 hour</Select.Item>
               <Select.Item value="1d">1 day</Select.Item>
-              <Select.Item value="2d">3 days</Select.Item>
-              <Select.Item value="3d">7 days</Select.Item>
+              <Select.Item value="3d">3 days</Select.Item>
+              <Select.Item value="7d">7 days</Select.Item>
             </Select.Group>
           </Select.Content>
         </Select.Root>
