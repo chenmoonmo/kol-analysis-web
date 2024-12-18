@@ -1,39 +1,72 @@
-import { HeartIcon, ResetIcon } from "@radix-ui/react-icons";
+import { Tweet } from "@/types";
+import { EyeOpenIcon, HeartIcon, ResetIcon } from "@radix-ui/react-icons";
 import { Card } from "@radix-ui/themes";
+import Image from "next/image";
+import dayjs from "dayjs";
+import Link from "next/link";
 
-export function TweetCard() {
+export function TweetCard({ tweet }: { tweet: Tweet }) {
+  const time = dayjs(tweet.created_at).format("HH:mm");
+  const date = dayjs(tweet.created_at).format("YYYY-MM-DD");
 
   return (
-    <Card className="flex max-w-[400px]">
-      <div className="rounded-full w-10 h-10 bg-gray-200 flex-shrink-0"></div>
-      <div className="ml-2">
-        <div className="flex items-start gap-2">
-          <div className="text-sm font-medium">Binance</div>
-          <div className="text-xs text-gray-500">@binance</div>
-        </div>
-        <div className="text-sm">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="text-xs text-gray-500">12:00</div>
-          <div className="text-xs text-gray-500">2024-01-01</div>
-          <div className="text-xs text-gray-500">100 views</div>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className=" flex items-center text-xs text-gray-500">
-            <HeartIcon />
-            100
-          </div>
-          <div className=" flex items-center text-xs text-gray-500">
-            <ResetIcon />
-            100
+    <Card className="flex gap-2 max-w-[400px] px-6 py-4" asChild>
+      <Link href={`https://twitter.com/${tweet.screen_name}/status/${tweet.tweet_id}`} target="_blank">
+        <Link
+          href={`https://twitter.com/${tweet.screen_name}`}
+          target="_blank"
+          className="rounded-full w-10 h-10 flex-shrink-0 overflow-hidden"
+        >
+          <Image
+            src={tweet.user_info.avatar}
+            width={80}
+            height={80}
+            alt="avatar"
+          />
+        </Link>
+        <div className="flex flex-col gap-2">
+          <Link
+            href={`https://twitter.com/${tweet.screen_name}`}
+            target="_blank"
+            className="flex items-center gap-2"
+          >
+            <div className="text-sm font-medium">{tweet.user_info.name}</div>
+            <div className="text-xs text-gray-500">@{tweet.screen_name}</div>
+          </Link>
+          <div className="text-sm w-full break-all">{tweet.text}</div>
+          <div className="flex items-center gap-1">
+            {tweet.media.photo?.map((photo) => (
+              <Card key={photo.media_url_https} className="h-40 w-full">
+                <Image
+                  fill={true}
+                  src={photo.media_url_https}
+                  alt="media"
+                  className="object-cover"
+                />
+              </Card>
+            ))}
           </div>
 
+          <div className="flex items-center gap-2 mt-auto text-nowrap">
+            <div className="flex items-center gap-1">
+              <div className="text-xs text-gray-500">{time}</div>
+              <div className="text-xs text-gray-500">{date}</div>
+            </div>
+            <div className=" flex items-center text-xs text-gray-500 gap-1">
+              <EyeOpenIcon />
+              {tweet.views}
+            </div>
+            <div className=" flex items-center text-xs text-gray-500 gap-1">
+              <HeartIcon />
+              {tweet.favorites}
+            </div>
+            <div className=" flex items-center text-xs text-gray-500 gap-1">
+              <ResetIcon />
+              {tweet.retweets}
+            </div>
+          </div>
         </div>
-      </div>
+      </Link>
     </Card>
   );
 }
