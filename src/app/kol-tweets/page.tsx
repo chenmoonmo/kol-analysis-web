@@ -79,10 +79,10 @@ function KolList() {
             {data?.address.map((item, index) => (
               <Link
                 key={index}
-                href={`https://x.com/search?q=$${item.key}&src=typed_query`}
+                href={`https://x.com/search?q=${item.key}&src=typed_query`}
                 target="_blank"
               >
-                ${item.key}
+                {item.key}
               </Link>
             ))}
           </div>
