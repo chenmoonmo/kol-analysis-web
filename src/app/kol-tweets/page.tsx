@@ -23,6 +23,7 @@ const fetchSpeAnalyse = async (
 };
 
 const fetchTweets = async (q: string): Promise<Tweet[]> => {
+  if (q.length === 0) return [];
   const res = await fetch(
     `https://api.xdog.pro/tweet/search-v2?q=${q}&only_count=false`
   );
@@ -67,6 +68,10 @@ function KolList() {
             <Select.Group>
               <Select.Label>dist</Select.Label>
               <Select.Item value="1h">1 hour</Select.Item>
+              <Select.Item value="2h">2 hours</Select.Item>
+              <Select.Item value="3h">3 hours</Select.Item>
+              <Select.Item value="6h">6 hours</Select.Item>
+              <Select.Item value="12h">12 hours</Select.Item>
               <Select.Item value="1d">1 day</Select.Item>
               <Select.Item value="3d">3 days</Select.Item>
               <Select.Item value="7d">7 days</Select.Item>
@@ -123,7 +128,6 @@ function KolList() {
         )}
         {data?.dollar && data?.dollar.length > 0 && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-
             {data?.dollar.map((item, index) => (
               // <Link
               //   key={index}
@@ -145,12 +149,24 @@ function KolList() {
         {nodata && <div className="text-gray-500">No data</div>}
       </div>
       <div className="flex items-center gap-2 mt-5">
-        <TextField.Root ref={searchRef} className="w-[500px]" size="2">
+        <TextField.Root
+          ref={searchRef}
+          className="w-[500px]"
+          size="2"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              onSearch(searchRef.current?.value || "");
+            }
+          }}
+        >
           <TextField.Slot>
             <MagnifyingGlassIcon height="16" width="16" />
           </TextField.Slot>
         </TextField.Root>
-        <Button size="2" onClick={() => onSearch(searchRef.current?.value || "")}>
+        <Button
+          size="2"
+          onClick={() => onSearch(searchRef.current?.value || "")}
+        >
           Search
         </Button>
       </div>
