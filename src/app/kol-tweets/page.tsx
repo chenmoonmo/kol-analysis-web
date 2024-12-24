@@ -6,7 +6,8 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Button, TextField, Link, Select } from "@radix-ui/themes";
 // import { Link, Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const fetchSpeAnalyse = async (
   dist: string,
@@ -31,10 +32,47 @@ const fetchTweets = async (q: string): Promise<Tweet[]> => {
 };
 
 function KolList() {
-  const searchRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();
+
   const [searchResult, setSearchResult] = useState<Tweet[]>([]);
-  const [dist, setDist] = useState("3d");
-  const [minCount, setMinCount] = useState("5");
+
+  const onSearch = async (q: string) => {
+    setSearchResult([]);
+    const res = await fetchTweets(q);
+    setSearchResult(res);
+  };
+
+  const [dist, setDist] = useState(searchParams.get("dist") || "1h");
+  const [minCount, setMinCount] = useState(searchParams.get("minCount") || "2");
+
+  const [q, setQ] = useState(searchParams.get("q") || "");
+
+  const onDistChange = (dist: string) => {
+    setDist(dist);
+    const url = new URL(window.location.href);
+    url.searchParams.set("dist", dist);
+    url.searchParams.set("minCount", minCount);
+    url.searchParams.set("q", q);
+    window.history.pushState({}, "", url);
+  };
+
+  const onMinCountChange = (minCount: string) => {
+    setMinCount(minCount);
+    const url = new URL(window.location.href);
+    url.searchParams.set("dist", dist);
+    url.searchParams.set("minCount", minCount);
+    url.searchParams.set("q", q);
+    window.history.pushState({}, "", url);
+  };
+
+  const onQChange = (q: string) => {
+    setQ(q);
+    const url = new URL(window.location.href);
+    url.searchParams.set("dist", dist);
+    url.searchParams.set("minCount", minCount);
+    url.searchParams.set("q", q);
+    window.history.pushState({}, "", url);
+  };
 
   const { data } = useQuery({
     queryKey: ["spe-analyse", dist, minCount],
@@ -42,15 +80,16 @@ function KolList() {
   });
 
   const onWordClicked = (word: string) => {
-    searchRef.current!.value = word;
+    onQChange(word);
     onSearch(word);
   };
 
-  const onSearch = async (q: string) => {
-    setSearchResult([]);
-    const res = await fetchTweets(q);
-    setSearchResult(res);
-  };
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) {
+      onSearch(q);
+    }
+  }, []);
 
   const nodata =
     data === undefined
@@ -62,7 +101,7 @@ function KolList() {
   return (
     <div className="p-20 flex flex-col items-start">
       <div className="flex items-center gap-2">
-        <Select.Root value={dist} onValueChange={setDist}>
+        <Select.Root value={dist} onValueChange={onDistChange}>
           <Select.Trigger />
           <Select.Content>
             <Select.Group>
@@ -78,7 +117,7 @@ function KolList() {
             </Select.Group>
           </Select.Content>
         </Select.Root>
-        <Select.Root value={minCount} onValueChange={setMinCount}>
+        <Select.Root value={minCount} onValueChange={onMinCountChange}>
           <Select.Trigger />
           <Select.Content>
             <Select.Group>
@@ -150,12 +189,13 @@ function KolList() {
       </div>
       <div className="flex items-center gap-2 mt-5">
         <TextField.Root
-          ref={searchRef}
+          value={q}
+          onChange={(e) => onQChange(e.target.value)}
           className="w-[500px]"
           size="2"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              onSearch(searchRef.current?.value || "");
+              onSearch(q);
             }
           }}
         >
@@ -163,10 +203,7 @@ function KolList() {
             <MagnifyingGlassIcon height="16" width="16" />
           </TextField.Slot>
         </TextField.Root>
-        <Button
-          size="2"
-          onClick={() => onSearch(searchRef.current?.value || "")}
-        >
+        <Button size="2" onClick={() => onSearch(q)}>
           Search
         </Button>
       </div>

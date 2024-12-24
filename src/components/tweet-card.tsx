@@ -11,7 +11,10 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
 
   return (
     <Card className="flex gap-2 max-w-[400px] px-6 py-4" asChild>
-      <Link href={`https://twitter.com/${tweet.screen_name}/status/${tweet.tweet_id}`} target="_blank">
+      <a
+        href={`https://twitter.com/${tweet.screen_name}/status/${tweet.tweet_id}`}
+        target="_blank"
+      >
         <Link
           href={`https://twitter.com/${tweet.screen_name}`}
           target="_blank"
@@ -25,14 +28,15 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
           />
         </Link>
         <div className="flex flex-col gap-2">
-          <Link
+          <a
             href={`https://twitter.com/${tweet.screen_name}`}
             target="_blank"
+            onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-2"
           >
             <div className="text-sm font-medium">{tweet.user_info.name}</div>
             <div className="text-xs text-gray-500">@{tweet.screen_name}</div>
-          </Link>
+          </a>
           <div className="text-sm w-full break-all">{tweet.text}</div>
           <div className="flex items-center gap-1">
             {tweet.media.photo?.map((photo) => (
@@ -66,7 +70,7 @@ export function TweetCard({ tweet }: { tweet: Tweet }) {
             </div>
           </div>
         </div>
-      </Link>
+      </a>
     </Card>
   );
 }
