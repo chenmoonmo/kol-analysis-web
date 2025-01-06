@@ -6,49 +6,31 @@ import { usePathname } from "next/navigation";
 export default function Nav() {
   const pathname = usePathname();
 
+  const links = [
+    { href: "/", text: "KOL Analysis" },
+    { href: "/ai-analysis", text: "AI Analysis" },
+    { href: "/kol-tweets", text: "KOL Tweets" },
+    { href: "/kol-list", text: "KOL List" },
+    { href: "/holders", text: "Pump Holders" },
+  ];
+
   return (
     <div className="flex flex-col gap-2 h-screen sticky top-0 py-10 pl-4 pr-2 text-l text-nowrap">
-      <RadixLink
-        className={`!block py-2 px-4 hover:bg-gray-800 rounded-md cursor-pointer ${
-          pathname === "/" ? "bg-gray-800" : ""
-        }`}
-        weight="medium"
-        color="gray"
-        href="/"
-      >
-        KOL Analysis
-      </RadixLink>
-      <RadixLink
-        className={`!block py-2 px-4 hover:bg-gray-800 rounded-md cursor-pointer ${
-          pathname === "/ai-analysis" ? "bg-gray-800" : ""
-        }`}
-        weight="medium"
-        color="gray"
-        href="/ai-analysis"
-      >
-        AI Analysis
-      </RadixLink>
-      <RadixLink
-        className={`!block py-2 px-4 hover:bg-gray-800 rounded-md cursor-pointer ${
-          pathname === "/kol-tweets" ? "bg-gray-800" : ""
-        }`}
-        weight="medium"
-        color="gray"
-        href="/kol-tweets"
-      >
-        KOL Tweets
-      </RadixLink>
-
-      <RadixLink
-        className={`!block py-2 px-4 hover:bg-gray-800 rounded-md cursor-pointer ${
-          pathname === "/kol-list" ? "bg-gray-800" : ""
-        }`}
-        weight="medium"
-        color="gray"
-        href="/kol-list"
-      >
-        KOL List
-      </RadixLink>
+      {links.map(({ href, text }) => (
+        <RadixLink
+          key={href}
+          className={`!block py-2 px-4 hover:bg-gray-800 rounded-md cursor-pointer ${
+            (href === "/" ? pathname === href : pathname.startsWith(href))
+              ? "bg-gray-800"
+              : ""
+          }`}
+          weight="medium"
+          color="gray"
+          href={href}
+        >
+          {text}
+        </RadixLink>
+      ))}
     </div>
   );
 }
