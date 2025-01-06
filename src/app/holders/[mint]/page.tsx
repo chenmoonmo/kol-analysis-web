@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftIcon, Link1Icon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { IconButton, Link, Table } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
