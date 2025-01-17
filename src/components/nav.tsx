@@ -12,6 +12,8 @@ export default function Nav() {
     { href: "/kol-tweets", text: "KOL Tweets" },
     { href: "/kol-list", text: "KOL List" },
     { href: "/holders", text: "Pump Holders" },
+    { href: "/holder-watch", text: "Holder Watch" },
+
   ];
 
   return (
